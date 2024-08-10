@@ -134,6 +134,22 @@ train_x,val_x,train_y,val_y=train_test_split(x, y, test_size=0.2, random_state=8
 ```
 
 開始訓練模型 導入Library與設定決策樹
+#Decision Tree 決策樹
+決策樹是基於基尼不純度(Gini impurity)
+也就是1減去某個類別比例的方式
+![image](https://github.com/user-attachments/assets/57200ff3-6bc1-479d-95c1-86c33f5cec18)
+
+但我更喜歡以圖示法的方式去理解
+
+基尼不純度就是在一組sample中，抽樣2次(抽完放回母體)使得兩者為不同類別的機率。當你的資料的類別越多越雜，任抽取兩個樣本為同類的機率就越低，此時基尼不純度會越高。相反的，若樣本中只有一個類別，則不會出現不同類別的機率。
+從這樣往下推導，我們可以大概理解成，基尼不純度就是1，減去母群中抽出2樣本相同類別的機率，剩下的面積就是基尼不純度。
+
+![image](https://github.com/user-attachments/assets/685a4e66-7fe4-4ffd-88e7-db932fd12e34)
+圖片引自: https://blog.csdn.net/weixin_38753422/article/details/114609777
+
+而決策樹就是每次的分類，都必須讓基尼不純度更低。
+換句話說，就是往下每個子節點具備的類別更純粹，直到最後無法在往下進行區分，每個子節點只具備單純的類別為止。
+
 ```python
 # 決策樹
 from sklearn.tree import DecisionTreeClassifier
@@ -147,7 +163,7 @@ from sklearn.model_selection import GridSearchCV
 好處是交叉驗證嚴謹，必定能給出設定範圍內最佳的超參數組合，也減少overfitting的風險；缺點是隨著設定的超參數組合越多，必須要計算的時間也會越長，會耗費一定的計算資源。
 
 這個專案中，先設定常見的max_depth，min_samples_split，min_samples_leaf這三個超參數。
-為了減少計算資源，只從1~10挑了幾個代表的超參數，當作超參數來進行優化。
+為了減少計算資源，這三個超參數中，都只從1~10隨機挑了幾個代表，當作超參數來進行優化。
 
 ```python
 # 設定超參數的網格搜索
