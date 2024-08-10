@@ -132,52 +132,77 @@ x=df.drop(columns='Expert Diagnose')
 y=df['Expert Diagnose']
 train_x,val_x,train_y,val_y=train_test_split(x, y, test_size=0.2, random_state=87)
 ```
-設定決策樹
+
+開始訓練模型 導入Library與設定決策樹
 ```python
 # 決策樹
 from sklearn.tree import DecisionTreeClassifier
+# 給定網格搜索 GridSearch + cross validation驗證
 from sklearn.model_selection import GridSearchCV
+```
 
-# 超參數
+為了找出最佳的決策樹模型，設定進行網格搜索GridSearch以調整樹的超參數
+# GridSearch 
+網格搜索是透過給定的超參數，去讓模型先以特定的超參數組合，去對train case進行cross validation。相當於暴力嘗試過所有的超參數組合，最後返回一個最佳的解。
+好處是交叉驗證嚴謹，必定能給出設定範圍內最佳的超參數組合，也減少overfitting的風險；缺點是隨著設定的超參數組合越多，必須要計算的時間也會越長，會耗費一定的計算資源。
+
+這個專案中，先設定常見的max_depth，min_samples_split，min_samples_leaf這三個超參數。
+為了減少計算資源，只從1~10挑了幾個代表的超參數，當作超參數來進行優化。
+
+```python
+# 設定超參數的網格搜索
 param_grid = {
     'max_depth': [3, 5, 7, 10],  # 樹的最大深度
     'min_samples_split': [2, 5, 10],  # 節點分裂所需的最小樣本數
     'min_samples_leaf': [1, 2, 4],  # 葉子節點所需的最小樣本數
 }
+```
 
-# 初始化
+進行Grid search 並返回最佳的超參組合
+```python
+# 設定決策樹模型
 dctree= DecisionTreeClassifier()
+# 網格搜索設定
+# cross validation設定為5
 grid_search = GridSearchCV(estimator=dctree, param_grid=param_grid, cv=5)
 
-# 在訓練數據上進行網格搜索
+# 進行網格搜索
 grid_search.fit(train_x, train_y)
 
-# 獲取最佳參數
+# 回傳最佳參數
 best_params = grid_search.best_params_
 print("最佳參數:", best_params)
-
-# 使用最佳參數初始化模型
-best_dctree = DecisionTreeClassifier(**best_params)
-
-best_dctree.fit(train_x, train_y)
-
 ```
 最佳參數: {'max_depth': 3, 'min_samples_leaf': 4, 'min_samples_split': 2}
 
+利用超參數組合進行模型訓練
 ```python
-# testcase預測
+# 最佳超參數組合初始化模型
+best_dctree = DecisionTreeClassifier(**best_params)
+# 開始模型訓練
+best_dctree.fit(train_x, train_y)
+```
+答案揭曉，利用訓練完成的決策樹，對訓練資料、測試資料進行預測
+```python
+# 測試集
+# testcase test
 X=best_dctree.predict(train_x)
 accuracy=accuracy_score(X, train_y)
-print('原本預測分數:',accuracy)
-
-# 進行樹的預測
-tree_pred_y=best_dctree.predict(val_x)
-
-# 結果檢驗
-accuracy=accuracy_score(tree_pred_y, val_y)
-print('決策樹預測分數:', accuracy)
+print('訓練集預測分數:',accuracy)
 ```
+訓練集預測分數: 0.8645833333333334
+```python
+# 訓練集
+tree_pred_y=best_dctree.predict(val_x)
+# 測試結果檢驗
+accuracy=accuracy_score(tree_pred_y, val_y)
+print('測試集預測分數:', accuracy)
+```
+測試集預測分數: 0.75
 
+# 關於決策樹Decision Tree
+
+畫圖
 ```python
 from sklearn.tree import export_graphviz
 import graphviz
@@ -201,7 +226,7 @@ dot_data = export_graphviz(best_dctree, out_file=None,
 graph = graphviz.Source(dot_data) 
 
 # 保存圖片到文件
-graph.render("D:/desktop/disorder_decision_tree")
+# graph.render("D:/desktop/disorder_decision_tree")
 
 graph
 
