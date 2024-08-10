@@ -29,7 +29,8 @@ print(df.columns)
 print(len(df.columns))
 ```
 
-這邊放一個圖片大圖
+![清洗前feature](datawash_01.png)
+
 
 我們可以看到說，這個資料集包含了從Patient Number到Expert Diagnose等19個屬性。以下為詳細的19個屬性一覽，附上翻譯後面會用到。
 
@@ -117,8 +118,7 @@ for i in range(1,11):
 
 df.head()
 ```
-
-結果展示02
+![清洗後feature](datawash_02.png)
 
 完成資料的清洗過後，我們先拆分資料以利後續分析
 80% train case
@@ -204,7 +204,7 @@ graph.render("D:/desktop/disorder_decision_tree")
 graph
 
 ```
-決策樹圖片
+![決策樹結果](mental_illness_dctree.png)
 
 
 
