@@ -10,3 +10,20 @@
 資料集:
 https://www.kaggle.com/datasets/cid007/mental-disorder-classification/data
 
+
+我們先導入資料並進行簡單的分析 
+
+```
+# 導入Library
+import numpy as np
+import pandas as pd
+```
+
+```
+# open files
+df = pd.read_csv('Dataset-Mental-Disorders.csv')
+df.head()
+
+```
+
+
